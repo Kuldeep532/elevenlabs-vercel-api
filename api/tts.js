@@ -1,6 +1,17 @@
 import axios from "axios";
 
 export default async function handler(req, res) {
+
+  // ✅ CORS HEADERS
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // ✅ Handle preflight
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "POST only" });
   }
@@ -30,7 +41,8 @@ export default async function handler(req, res) {
 
     res.setHeader("Content-Type", "audio/mpeg");
     res.send(Buffer.from(response.data));
-  } catch (e) {
+  } catch (err) {
+    console.error(err.message);
     res.status(500).json({ error: "TTS failed" });
   }
 }
